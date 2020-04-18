@@ -1,12 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SMI,CCM-SMI,bind
-% ‚±‚ê‚Ü‚Å‚ÌpropSMI,CCMíœƒo[ƒWƒ‡ƒ“
 % 
 % 
+% é€ä¿¡ã¯ã„ã¤ã‚‚ã®ã‚·ãƒ³ãƒœãƒ«Ã—ã‚­ãƒ£ãƒªã‚¢Ã—ãƒ¦ãƒ¼ã‚¶
 % 
-% ‘—M‚Í‚¢‚Â‚à‚ÌƒVƒ“ƒ{ƒ‹~ƒLƒƒƒŠƒA~ƒ†[ƒU
-% 
-% “®‚©‚·‚É‚ÍŠÖ”
+% å‹•ã‹ã™ã«ã¯é–¢æ•°
 % signal_generater
 % tx_prepare
 % singlepath
@@ -16,62 +14,62 @@
 % demodulation
 % ber_calculaton
 % tocf
-% ‚ª•K—v(ifft,fft‚Ì“]’u‚Ì‚Æ‚±‚ë‚ª‚¿‚å‚Á‚Æ‰ö‚µ‚¢)
+% ãŒå¿…è¦(ifft,fftã®è»¢ç½®ã®ã¨ã“ã‚ãŒã¡ã‚‡ã£ã¨æ€ªã—ã„)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% % ²‚ÌƒtƒHƒ“ƒgƒTƒCƒY
+% % è»¸ã®ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º
 % set(0, 'defaultAxesFontSize', 16);
 % set(0, 'defaultAxesFontName', 'Arial');
 % % set(0, 'defaultAxesFontName', 'Times');
 % 
-% % ƒ^ƒCƒgƒ‹A’ß‚È‚Ç‚ÌƒtƒHƒ“ƒgƒTƒCƒY
+% % ã‚¿ã‚¤ãƒˆãƒ«ã€æ³¨é‡ˆãªã©ã®ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º
 % set(0, 'defaultTextFontSize', 16);
 % 
-% % ²‚Ìü‚Ì‘¾‚³
+% % è»¸ã®ç·šã®å¤ªã•
 % set(0, 'DefaultLineLineWidth', 1)
 % set(0, 'DefaultAxesLineWidth', 1);
 
 clear;
 % close all;
 tic;
-rand('state',sum(100*clock)); %randŠÖ”‚Ì‰Šú‰»
+rand('state',sum(100*clock)); %randé–¢æ•°ã®åˆæœŸåŒ–
 
-%% ’l‚Ì’è‹`
+%% å€¤ã®å®šç¾©
 antenna_form=2;                         %1->linear, 2->rectangular
 number_ant_x=8;
 number_ant_y=8;
-number_ant=number_ant_x*number_ant_y;                           %ƒAƒ“ƒeƒi”(x*y‚É‚È‚é‚æ‚¤‚É‚µ‚Ä‚¨‚­)
-number_pilot=16;                         %ƒpƒCƒƒbƒg”
+number_ant=number_ant_x*number_ant_y;                           %ã‚¢ãƒ³ãƒ†ãƒŠæ•°(x*yã«ãªã‚‹ã‚ˆã†ã«ã—ã¦ãŠã)
+number_pilot=16;                         %ãƒ‘ã‚¤ãƒ­ãƒƒãƒˆæ•°
 
 
-Doppler=0.01;              %0.01               %ƒhƒbƒvƒ‰[ü”g”(10Hz)   ‚È‚º‚©0.001ˆÈ‰º‚¾‚Æˆ«‚­‚È‚éH0.01‚Ü‚Å‚Í•’Ê‚É‚æ‚­‚È‚é
+Doppler=0.01;              %0.01               %ãƒ‰ãƒƒãƒ—ãƒ©ãƒ¼å‘¨æ³¢æ•°(10Hz)   ãªãœã‹0.001ä»¥ä¸‹ã ã¨æ‚ªããªã‚‹ï¼Ÿ0.01ã¾ã§ã¯æ™®é€šã«ã‚ˆããªã‚‹
 
-ebno_min=0;                             %Å¬Eb/No’l
-ebno_max=15;                            %Å‘åEb/No’l
-ebno_step=3;                            %Eb/NoŠÔŠu
+ebno_min=0;                             %æœ€å°Eb/Noå€¤
+ebno_max=15;                            %æœ€å¤§Eb/Noå€¤
+ebno_step=3;                            %Eb/Noé–“éš”
 
 % number_bind=2;
 
 repeat=100;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ‚±‚Ì‰º‚ÍŠî–{‚¢‚¶‚ç‚È‚¢(ƒ†[ƒU”k‚ÍOK)
+% ã“ã®ä¸‹ã¯åŸºæœ¬ã„ã˜ã‚‰ãªã„(ãƒ¦ãƒ¼ã‚¶æ•°kã¯OK)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-guard_interval=16;                       %ƒK[ƒhƒCƒ“ƒ^[ƒoƒ‹
-trans_rate=2*10^6;                      %“`‘—‘Ñˆæ•(2MHz)
-number_symbol=20;                       %ƒVƒ“ƒ{ƒ‹”
-number_carrier=64;                      %ƒLƒƒƒŠƒ„”
-ifft_size=64;                           %IFFTƒTƒCƒY
+guard_interval=16;                       %ã‚¬ãƒ¼ãƒ‰ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«
+trans_rate=2*10^6;                      %ä¼é€å¸¯åŸŸå¹…(2MHz)
+number_symbol=20;                       %ã‚·ãƒ³ãƒœãƒ«æ•°
+number_carrier=64;                      %ã‚­ãƒ£ãƒªãƒ¤æ•°
+ifft_size=64;                           %IFFTã‚µã‚¤ã‚º
 
 D=1;                                    %Desired_User
-% number_user=length(DOAvector);          %ƒ†[ƒU”(=“—ˆŠp”)
+% number_user=length(DOAvector);          %ãƒ¦ãƒ¼ã‚¶æ•°(=åˆ°æ¥è§’æ•°)
 deg2rad=pi/180;
-d=0.5;                                  %ƒAƒ“ƒeƒiŠÔŠu
+d=0.5;                                  %ã‚¢ãƒ³ãƒ†ãƒŠé–“éš”
 
-modulation_index=4;                     %•Ï’²•û®(4->16QAM)
-path_index=3;                           %1->ƒVƒ“ƒOƒ‹ƒpƒXC2->ƒ}ƒ‹ƒ`ƒpƒXC3->rice
+modulation_index=4;                     %å¤‰èª¿æ–¹å¼(4->16QAM)
+path_index=3;                           %1->ã‚·ãƒ³ã‚°ãƒ«ãƒ‘ã‚¹ï¼Œ2->ãƒãƒ«ãƒãƒ‘ã‚¹ï¼Œ3->rice
 number_path=5;
 path_interval=1;
 decay_factor=1;
@@ -80,7 +78,7 @@ K=10^(K_dB/10);
 sigma=0.2;
 
 
-%ƒƒ‚ƒŠŠm•Û
+%ãƒ¡ãƒ¢ãƒªç¢ºä¿
 % pilot=zeros(number_user,number_carrier,number_user);
 % faded_signal=zeros(number_user,(number_carrier+guard_interval)*(number_symbol+number_pilot));
 % channel=zeros(number_ant,number_user,number_carrier);
@@ -118,7 +116,7 @@ end
 number_user=length(DOAvector_x);
 
 pilot=zeros(number_user,number_carrier,number_user);
-%ƒpƒCƒƒbƒgM†ì¬
+%ãƒ‘ã‚¤ãƒ­ãƒƒãƒˆä¿¡å·ä½œæˆ
 hadamard_m=hadamard(number_user);
 for nu=1:number_user
     pilot(:,:,nu)=repmat(hadamard_m(:,nu),1,ifft_size);
@@ -130,14 +128,14 @@ elseif k==2
     if number_pilot==number_user
         pilot_signal=pilot;
     elseif number_pilot>number_user
-        %number_pilot‚ªuserˆÈã‚Ì‚Æ‚«•¡»
+        %number_pilotãŒuserä»¥ä¸Šã®ã¨ãè¤‡è£½
         pilot_signal=[repmat(pilot(1,:,:),number_pilot/2,1);repmat(pilot(2,:,:),number_pilot/2,1)];
     end
 elseif k==4
     if number_pilot==number_user
         pilot_signal=pilot;
     elseif number_pilot>number_user
-        %number_pilot‚ªuserˆÈã‚Ì‚Æ‚«•¡»
+        %number_pilotãŒuserä»¥ä¸Šã®ã¨ãè¤‡è£½
         pilot_signal=[repmat(pilot(1,:,:),number_pilot/4,1);repmat(pilot(2,:,:),number_pilot/4,1);repmat(pilot(3,:,:),number_pilot/4,1);repmat(pilot(4,:,:),number_pilot/4,1)];
     end
 elseif k==8
@@ -149,45 +147,45 @@ elseif k==32
 end
     
 
-ber_result_smi=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%BER‘ª’è’l‹L˜^ƒƒ‚ƒŠ
-ber_result_ccm=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%BER‘ª’è’l‹L˜^ƒƒ‚ƒŠ
-ber_result_bind=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%BER‘ª’è’l‹L˜^ƒƒ‚ƒŠ
-ber_result_zf=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%BER‘ª’è’l‹L˜^ƒƒ‚ƒŠ
-thpt_result_smi=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%Thpt‘ª’è’l‹L˜^ƒƒ‚ƒŠ
-thpt_result_ccm=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%Thpt‘ª’è’l‹L˜^ƒƒ‚ƒŠ
-thpt_result_bind=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%Thpt‘ª’è’l‹L˜^ƒƒ‚ƒŠ
-thpt_result_zf=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%Thpt‘ª’è’l‹L˜^ƒƒ‚ƒŠ
+ber_result_smi=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%BERæ¸¬å®šå€¤è¨˜éŒ²ãƒ¡ãƒ¢ãƒª
+ber_result_ccm=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%BERæ¸¬å®šå€¤è¨˜éŒ²ãƒ¡ãƒ¢ãƒª
+ber_result_bind=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%BERæ¸¬å®šå€¤è¨˜éŒ²ãƒ¡ãƒ¢ãƒª
+ber_result_zf=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%BERæ¸¬å®šå€¤è¨˜éŒ²ãƒ¡ãƒ¢ãƒª
+thpt_result_smi=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%Thptæ¸¬å®šå€¤è¨˜éŒ²ãƒ¡ãƒ¢ãƒª
+thpt_result_ccm=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%Thptæ¸¬å®šå€¤è¨˜éŒ²ãƒ¡ãƒ¢ãƒª
+thpt_result_bind=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%Thptæ¸¬å®šå€¤è¨˜éŒ²ãƒ¡ãƒ¢ãƒª
+thpt_result_zf=zeros(floor((ebno_max-ebno_min)/ebno_step)+1,2);%Thptæ¸¬å®šå€¤è¨˜éŒ²ãƒ¡ãƒ¢ãƒª
 
 
 for ebno=1:((ebno_max-ebno_min)/ebno_step)+1
     eb_no=(ebno-1)*ebno_step+ebno_min;
     
-    modified_eb_no=eb_no+10*(log10(modulation_index)+log10(number_carrier/(number_carrier+guard_interval))+log10(number_symbol/(number_symbol+number_pilot)));%-log10(number_ant));%ƒAƒ“ƒeƒiƒQƒCƒ“(•Ï’²•û®‚É‘Î‚·‚é•â³)   
-%     modified_eb_no=eb_no+10*(log10(modulation_index)+log10(number_carrier/(number_carrier+guard_interval))+log10(number_symbol/(number_symbol+number_pilot))-log10(number_ant));%ƒAƒ“ƒeƒi³‹K‰»(•Ï’²•û®‚É‘Î‚·‚é•â³)
+    modified_eb_no=eb_no+10*(log10(modulation_index)+log10(number_carrier/(number_carrier+guard_interval))+log10(number_symbol/(number_symbol+number_pilot)));%-log10(number_ant));%ã‚¢ãƒ³ãƒ†ãƒŠã‚²ã‚¤ãƒ³(å¤‰èª¿æ–¹å¼ã«å¯¾ã™ã‚‹è£œæ­£)   
+%     modified_eb_no=eb_no+10*(log10(modulation_index)+log10(number_carrier/(number_carrier+guard_interval))+log10(number_symbol/(number_symbol+number_pilot))-log10(number_ant));%ã‚¢ãƒ³ãƒ†ãƒŠæ­£è¦åŒ–(å¤‰èª¿æ–¹å¼ã«å¯¾ã™ã‚‹è£œæ­£)
     
     for re=1:repeat
-        %% ‘—M‹@
+        %% é€ä¿¡æ©Ÿ
         disp(['Eb/N0:', num2str(eb_no) ' USER',num2str(k) ' Repeat', num2str(re)]);
-        %‘—MM†ì¬
+        %é€ä¿¡ä¿¡å·ä½œæˆ
         [signal,Desired_bit_signal]=signal_generater(modulation_index,number_symbol,number_carrier,number_user,D);
             
         
-        %ƒpƒCƒƒbƒg•t‰Á‚µ‚½‘—MM†
+        %ãƒ‘ã‚¤ãƒ­ãƒƒãƒˆä»˜åŠ ã—ãŸé€ä¿¡ä¿¡å·
         S=[pilot_signal;signal];
         
-        %IFFT(freq2time),ƒK[ƒhƒCƒ“ƒ^[ƒoƒ‹•t‰Á,P/S•ÏŠ·
+        %IFFT(freq2time),ã‚¬ãƒ¼ãƒ‰ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«ä»˜åŠ ,P/Så¤‰æ›
         serial_signal_tx=tx_prepare(S,ifft_size,guard_interval,number_user);
         
         
-        %% “`‘—˜H
+        %% ä¼é€è·¯
         %AWGN
         noise_dis=10.^(-modified_eb_no/20);
         noise=sqrt(1/2)*(randn(number_ant,size(serial_signal_tx,2))+1j*randn(number_ant,size(serial_signal_tx,2))).*noise_dis;
         
 %         Pn=10^(-modified_eb_no/10);
-        % noise=(randn(number_ant,size(serial_signal_tx,2))+1j*randn(number_ant,size(serial_signal_tx,2)))*sqrt(Pn/2);      %“¯‚¶ˆÓ–¡(‹³‰È‘ver)
+        % noise=(randn(number_ant,size(serial_signal_tx,2))+1j*randn(number_ant,size(serial_signal_tx,2)))*sqrt(Pn/2);      %åŒã˜æ„å‘³(æ•™ç§‘æ›¸ver)
         
-        %ƒŠƒjƒAƒAƒŒƒCƒAƒ“ƒeƒiƒtƒ@ƒNƒ^(ƒXƒeƒAƒŠƒ“ƒOƒxƒNƒgƒ‹)
+        %ãƒªãƒ‹ã‚¢ã‚¢ãƒ¬ã‚¤ã‚¢ãƒ³ãƒ†ãƒŠãƒ•ã‚¡ã‚¯ã‚¿(ã‚¹ãƒ†ã‚¢ãƒªãƒ³ã‚°ãƒ™ã‚¯ãƒˆãƒ«)
         if antenna_form==1
             PSI=exp(-1j*2*pi*d*sin(DOAvector*deg2rad));
             array_resp=(ones(number_ant,1)*PSI).^((0:(number_ant-1)).'*ones(1,number_user));
@@ -208,36 +206,36 @@ for ebno=1:((ebno_max-ebno_min)/ebno_step)+1
         
         faded_Rayleigh=zeros(number_ant,size(serial_signal_tx,2));
         if path_index==1
-            %ƒVƒ“ƒOƒ‹ƒpƒX
+            %ã‚·ãƒ³ã‚°ãƒ«ãƒ‘ã‚¹
             for nu=1:number_user
                 faded_signal(nu,:)=singlepath_LoS(serial_signal_tx(nu,:),trans_rate,Doppler);
             end
-            %M†‚ÉƒAƒ“ƒeƒiƒtƒ@ƒNƒ^‚©‚¯‚ÄAWGN•t‰Á‚µ‚½‚à‚Ì‚ªóM‚³‚ê‚é(U•‚ğsqrt(ant)‚ÅŠ„‚Á‚Ä³‹K‰»->“d—Í‚Í1/ant)
+            %ä¿¡å·ã«ã‚¢ãƒ³ãƒ†ãƒŠãƒ•ã‚¡ã‚¯ã‚¿ã‹ã‘ã¦AWGNä»˜åŠ ã—ãŸã‚‚ã®ãŒå—ä¿¡ã•ã‚Œã‚‹(æŒ¯å¹…ã‚’sqrt(ant)ã§å‰²ã£ã¦æ­£è¦åŒ–->é›»åŠ›ã¯1/ant)
             serial_signal_rx=(array_resp*faded_signal+noise);%./sqrt(number_ant);
             
         elseif path_index==2
-            %ƒ}ƒ‹ƒ`ƒpƒX
+            %ãƒãƒ«ãƒãƒ‘ã‚¹
             for nu=1:number_user
                 faded_signal(nu,:)=multipath(serial_signal_tx(nu,:),trans_rate,Doppler,number_path,decay_factor,path_interval);
             end    
-            %M†‚ÉƒAƒ“ƒeƒiƒtƒ@ƒNƒ^‚©‚¯‚ÄAWGN•t‰Á‚µ‚½‚à‚Ì‚ªóM‚³‚ê‚é(U•‚ğsqrt(ant)‚ÅŠ„‚Á‚Ä³‹K‰»->“d—Í‚Í1/ant)
+            %ä¿¡å·ã«ã‚¢ãƒ³ãƒ†ãƒŠãƒ•ã‚¡ã‚¯ã‚¿ã‹ã‘ã¦AWGNä»˜åŠ ã—ãŸã‚‚ã®ãŒå—ä¿¡ã•ã‚Œã‚‹(æŒ¯å¹…ã‚’sqrt(ant)ã§å‰²ã£ã¦æ­£è¦åŒ–->é›»åŠ›ã¯1/ant)
             serial_signal_rx=(array_resp*faded_signal+noise);%./sqrt(number_ant);
             
-        elseif path_index==3%%%%%%‚à‚µ‚©‚µ‚ÄŠÖ”•ª‚¯‚Ä‚â‚é‚Æmultipath‚Ì1ƒpƒX‚ß‚ÆLoS‚Ìpath_amplitude‚Æ“’Bƒ^ƒCƒ~ƒ“ƒO“¯‚¶‚É‚È‚éHHHH
+        elseif path_index==3%%%%%%ã‚‚ã—ã‹ã—ã¦é–¢æ•°åˆ†ã‘ã¦ã‚„ã‚‹ã¨multipathã®1ãƒ‘ã‚¹ã‚ã¨LoSã®path_amplitudeã¨åˆ°é”ã‚¿ã‚¤ãƒŸãƒ³ã‚°åŒã˜ã«ãªã‚‹ï¼Ÿï¼Ÿï¼Ÿï¼Ÿ
             %LoS
             for nu=1:number_user
 %                 frame=71.4*10^(-6);     %LTE,5G
                 frame=4*10^(-6);     %802.11
-                t=frame/(guard_interval+number_carrier); %1ƒVƒ“ƒ{ƒ‹ŠÔ?
+                t=frame/(guard_interval+number_carrier); %1ã‚·ãƒ³ãƒœãƒ«æ™‚é–“?
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                 ‘S•”‚Å’x‚ê
+%                 å…¨éƒ¨ã§é…ã‚Œ
                 time=[0:t:frame*(number_pilot+number_symbol)-t];
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                tx_fading=serial_signal_tx.*exp(1j*2*pi*Doppler*repmat(time,number_user,1));    %‘Sˆõ“¯‚¶ˆÚ“®i‘¬“x‚Í‚Æ‚à‚©‚­•ûŒü‚àj‚É‚È‚Á‚Ä‚¢‚éHmultipath‚Ì‚Æ‚«‚ÍŠÖŒW‚È‚©‚Á‚½‚¯‚Ç‚¢‚¢‚Ì‚©cH
+                tx_fading=serial_signal_tx.*exp(1j*2*pi*Doppler*repmat(time,number_user,1));    %å…¨å“¡åŒã˜ç§»å‹•ï¼ˆé€Ÿåº¦ã¯ã¨ã‚‚ã‹ãæ–¹å‘ã‚‚ï¼‰ã«ãªã£ã¦ã„ã‚‹ï¼Ÿmultipathã®ã¨ãã¯é–¢ä¿‚ãªã‹ã£ãŸã‘ã©ã„ã„ã®ã‹â€¦ï¼Ÿ
             end
 %             faded_LoS=array_resp*serial_signal_tx;
             faded_LoS=array_resp*tx_fading;
-            %multipath(LoS‰Á‚¦‚ÄƒpƒX”‚É‚È‚é‚æ‚¤‚Énumber_path-1‚É‚µ‚Ä‚¢‚é)
+            %multipath(LoSåŠ ãˆã¦ãƒ‘ã‚¹æ•°ã«ãªã‚‹ã‚ˆã†ã«number_path-1ã«ã—ã¦ã„ã‚‹)
             for na=1:number_ant
                 for nu=1:number_user
                     faded_Rayleigh(na,:)=faded_Rayleigh(na,:)+multipath(serial_signal_tx(nu,:),trans_rate,Doppler,number_path-1,decay_factor,path_interval);
@@ -250,13 +248,13 @@ for ebno=1:((ebno_max-ebno_min)/ebno_step)+1
         
         
         
-        %% óM‹@
-        %S/P•ÏŠ·,ƒK[ƒhƒCƒ“ƒ^[ƒoƒ‹œ‹,FFT(time2freq),•À‚×‘Ö‚¦
+        %% å—ä¿¡æ©Ÿ
+        %S/På¤‰æ›,ã‚¬ãƒ¼ãƒ‰ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«é™¤å»,FFT(time2freq),ä¸¦ã¹æ›¿ãˆ
         fft_sig=rx_prepare(serial_signal_rx,ifft_size,guard_interval,number_ant,number_carrier,number_symbol,number_pilot);
         
-        %ƒ`ƒƒƒlƒ‹s—ñŒvZ%
+        %ãƒãƒ£ãƒãƒ«è¡Œåˆ—è¨ˆç®—%
         H_resp=fft_sig(:,1:number_pilot,:);
-        %pilot•½‹Ï‰»
+        %pilotå¹³å‡åŒ–
         Hresp=zeros(number_ant,number_user,number_carrier);
         for j=1:size(Hresp,2)
             Hresp(:,j,:)=sum(H_resp(:,number_pilot*(j-1)/number_user+1:number_pilot*j/number_user,:),2)/(number_pilot/number_user);
@@ -266,36 +264,36 @@ for ebno=1:((ebno_max-ebno_min)/ebno_step)+1
             ref(:,:,nc)=Hresp(:,:,nc)*inv(hadamard_m);
         end
         
-        %% ŒŸo–@
-        %‘—MM†S(ƒVƒ“ƒ{ƒ‹~ƒLƒƒƒŠƒA~ƒ†[ƒU)->signal_tx(Desired_User,ƒVƒ“ƒ{ƒ‹~ƒLƒƒƒŠƒA)‚É•ÏŠ·
+        %% æ¤œå‡ºæ³•
+        %é€ä¿¡ä¿¡å·S(ã‚·ãƒ³ãƒœãƒ«Ã—ã‚­ãƒ£ãƒªã‚¢Ã—ãƒ¦ãƒ¼ã‚¶)->signal_tx(Desired_User,ã‚·ãƒ³ãƒœãƒ«Ã—ã‚­ãƒ£ãƒªã‚¢)ã«å¤‰æ›
         signal_tx=reshape(S(:,:,D),1,number_symbol+number_pilot,number_carrier);
-        %signal_tx‚ÌƒpƒCƒƒbƒg‚¾‚¯”²‚«o‚µ
+        %signal_txã®ãƒ‘ã‚¤ãƒ­ãƒƒãƒˆã ã‘æŠœãå‡ºã—
         pilot_tx=signal_tx(:,1:number_pilot,:);
         
         for nc=1:number_carrier
             Xt=fft_sig(:,:,nc);
-            %•½‹Ï‰»
+            %å¹³å‡åŒ–
 %             Xtave=Hresp(:,:,nc);
 
             
            %% SMI%
-            %‰Šú‰ğ„’è
-            %‘ŠŠÖs—ñ
-            %³‚µ‚¢
+            %åˆæœŸè§£æ¨å®š
+            %ç›¸é–¢è¡Œåˆ—
+            %æ­£ã—ã„
             Psmi=Xt(:,1:number_pilot)*Xt(:,1:number_pilot)'/number_pilot;
 %             Psmi=Xtave*Xtave'/number_user;
-            %ˆÀH
+            %å®‰ï¼Ÿ
 %             Psmi=Xt*Xt'/(number_symbol+number_pilot);
-            %‘ŠŠÖƒxƒNƒgƒ‹
+            %ç›¸é–¢ãƒ™ã‚¯ãƒˆãƒ«
             Vsmi=Xt(:,1:number_pilot)*conj(pilot_signal(:,nc,D))/number_pilot;
 %             Vsmi=Xtave*conj(pilot_signal(1:4,nc,D))/number_user;
-            %d‚İŒvZ
+            %é‡ã¿è¨ˆç®—
             Ws=pinv(Psmi)*Vsmi;  
 %             Ws=pinv(Psmi)*ref(:,D,nc);  
             Wsmi=(Ws./(Vsmi'*Ws));
             
             
-            %compensation(•â)
+            %compensation(è£œå„Ÿ)
             Rec_smi(nc,:)=Wsmi'*Xt;
             
             
@@ -308,12 +306,12 @@ for ebno=1:((ebno_max-ebno_min)/ebno_step)+1
             
         end
         
-        %% bind SMI(ŒğŒİ‚É“ü‚ê‚é)
+        %% bind SMI(äº¤äº’ã«å…¥ã‚Œã‚‹)
         nc=1;
         while nc<=64
             for number_bind_tmp=[1,2,4,8,16,32,64]
                 %         for nc=1:number_bind:number_carrier
-                %number_bind–{‘©‚Ë‚½‚Æ‚«
+                %number_bindæœ¬æŸã­ãŸã¨ã
                 Xbind_tmp=zeros(number_ant,number_pilot*number_bind_tmp);
                 cnt=1;
                 for np=1:number_pilot
@@ -324,7 +322,7 @@ for ebno=1:((ebno_max-ebno_min)/ebno_step)+1
                         end
                         Xbind_tmp(:,cnt)=fft_sig(:,np,carrier);
 %                         if nc==64 && carrier==64
-%                             break;      %%%%—vC³(nc=64‚Ì‚Æ‚«carrier64‚Åcnt‚ª‘‚¦‚È‚¢‚Ì‚ÅXbind_tmp1—ñ–Ú‚É‘S•”ã‘‚«‚³‚ê‚Ä‚µ‚Ü‚¤A‰º‚Ì“ñ‚Â‚à’¼‚·)
+%                             break;      %%%%è¦ä¿®æ­£(nc=64ã®ã¨ãcarrier64ã§cntãŒå¢—ãˆãªã„ã®ã§Xbind_tmp1åˆ—ç›®ã«å…¨éƒ¨ä¸Šæ›¸ãã•ã‚Œã¦ã—ã¾ã†ã€ä¸‹ã®äºŒã¤ã‚‚ç›´ã™)
 %                         end
                         cnt=cnt+1;
                     end
@@ -334,18 +332,18 @@ for ebno=1:((ebno_max-ebno_min)/ebno_step)+1
                 for np=1:number_pilot
                     Xbind_tmp_std(:,np)=std(Xbind_tmp_abs(:,(np-1)*number_bind_tmp+1:np*number_bind_tmp),0,2);
                 end
-%                 Xbind_tmp_std_mean=mean(Xbind_tmp_std,'all');%%%•½‹Ï‚Å‚¢‚¢‚©‚Í‹á–¡‚Ì—]’n‚ ‚èiŒë·‚¾‚©‚çÅ‘å’l‚ğ•]‰¿Šî€‚É‚·‚é‚Æ‚©j
+%                 Xbind_tmp_std_mean=mean(Xbind_tmp_std,'all');%%%å¹³å‡ã§ã„ã„ã‹ã¯åŸå‘³ã®ä½™åœ°ã‚ã‚Šï¼ˆèª¤å·®ã ã‹ã‚‰æœ€å¤§å€¤ã‚’è©•ä¾¡åŸºæº–ã«ã™ã‚‹ã¨ã‹ï¼‰
                 Xbind_tmp_std_mean=mean(mean(Xbind_tmp_std),2);
                 if Xbind_tmp_std_mean > sigma
                     break;
-                elseif nc+number_bind_tmp*2-1 > 64%nc==64 && carrier==64    %ƒTƒuƒLƒƒƒŠƒA”’´‚¦‚»‚¤‚¾‚Á‚½‚ç(ÅIƒTƒuƒLƒƒƒŠƒA‚Ü‚Å‚¢‚Á‚Ä‚µ‚Ü‚Á‚½‚ç)bindI‚í‚è
+                elseif nc+number_bind_tmp*2-1 > 64%nc==64 && carrier==64    %ã‚µãƒ–ã‚­ãƒ£ãƒªã‚¢æ•°è¶…ãˆãã†ã ã£ãŸã‚‰(æœ€çµ‚ã‚µãƒ–ã‚­ãƒ£ãƒªã‚¢ã¾ã§ã„ã£ã¦ã—ã¾ã£ãŸã‚‰)bindçµ‚ã‚ã‚Š
                     number_bind_tmp=number_bind_tmp*2;
                     break;
                 end
             end
-            %%%%%%%%    break‚µ‚½Œãg‚¢‚½‚¢Xbind‚Íã‘‚«‚³‚ê‚¿‚á‚Á‚Ä‚é‚©‚ç‚à‚¤ˆê‰ñŒvZ‚·‚éA‚ ‚Æ‚Í‚±‚ê‚ğncƒ‹[ƒv‚Ì’†‚É‚¤‚Ü‚­“ü‚ê‚Ş
+            %%%%%%%%    breakã—ãŸå¾Œä½¿ã„ãŸã„Xbindã¯ä¸Šæ›¸ãã•ã‚Œã¡ã‚ƒã£ã¦ã‚‹ã‹ã‚‰ã‚‚ã†ä¸€å›è¨ˆç®—ã™ã‚‹ã€ã‚ã¨ã¯ã“ã‚Œã‚’ncãƒ«ãƒ¼ãƒ—ã®ä¸­ã«ã†ã¾ãå…¥ã‚Œè¾¼ã‚€
             
-            number_bind=number_bind_tmp/2;      %‚±‚ê‚¾‚Æ64‚É‚Í‚È‚ç‚È‚¢‚¯‚ÇAÀ—pã‚»‚ñ‚È‘å‚«‚È–â‘è‚Å‚Í‚È‚¢‚©‚ç‚¢‚¢‚©B
+            number_bind=number_bind_tmp/2;      %ã“ã‚Œã ã¨64ã«ã¯ãªã‚‰ãªã„ã‘ã©ã€å®Ÿç”¨ä¸Šãã‚“ãªå¤§ããªå•é¡Œã§ã¯ãªã„ã‹ã‚‰ã„ã„ã‹ã€‚
             Xbind=zeros(number_ant,number_pilot*number_bind);
             cnt=1;
             for np=1:number_pilot
@@ -360,12 +358,12 @@ for ebno=1:((ebno_max-ebno_min)/ebno_step)+1
             end
             
             
-            %bind•½‹Ï‰»   %©bind”•½‹Ï‰»‚à”²‚¢‚Ä‚İ‚½‚¯‚Ç‚ ‚Ü‚è‚æ‚­‚È‚¢HH(313~317)<-³•ûs—ñ‚É‚È‚Á‚Ä‚µ‚Ü‚¤‚Æ‚«‚ª‚ ‚é‚©‚çH
+            %bindå¹³å‡åŒ–   %â†bindæ•°å¹³å‡åŒ–ã‚‚æŠœã„ã¦ã¿ãŸã‘ã©ã‚ã¾ã‚Šã‚ˆããªã„ï¼Ÿï¼Ÿ(313~317)<-æ­£æ–¹è¡Œåˆ—ã«ãªã£ã¦ã—ã¾ã†ã¨ããŒã‚ã‚‹ã‹ã‚‰ï¼Ÿ
             Xbind_ave=zeros(number_ant,number_pilot);
             for i=1:size(Xbind_ave,2)
                 Xbind_ave(:,i)=sum(Xbind(:,(i-1)*number_bind+1:i*number_bind),2)/number_bind;
             end
-%             %             %pilot•½‹Ï‰»
+%             %             %pilotå¹³å‡åŒ–
 %             %             Xbindave=zeros(number_ant,number_user);
 %             %             for j=1:size(Xbindave,2)
 %             %                 Xbindave(:,j)=sum(Xbind_ave(:,number_pilot*(j-1)/number_user+1:number_pilot*j/number_user),2)/(number_pilot/number_user);
@@ -374,11 +372,11 @@ for ebno=1:((ebno_max-ebno_min)/ebno_step)+1
 %             %             Pbind=Xbindave*Xbindave'/number_user;
             Pbind=Xbind_ave*Xbind_ave'/number_pilot;
 %             Pbind=Xbind*Xbind'/(number_pilot*number_bind);
-            Vbind=Xbind*conj(repmat(pilot_signal(:,nc,D),number_bind,1))/(number_pilot*number_bind);        %D=1‚¶‚á‚È‚¢‚Æ‚«‚Í‘‚«Š·‚¦•K—v‚È‹C‚ª‚·‚é(repmat)
+            Vbind=Xbind*conj(repmat(pilot_signal(:,nc,D),number_bind,1))/(number_pilot*number_bind);        %D=1ã˜ã‚ƒãªã„ã¨ãã¯æ›¸ãæ›ãˆå¿…è¦ãªæ°—ãŒã™ã‚‹(repmat)
             Wb=pinv(Pbind)*Vbind;
             Wbind=(Wb./(Vbind'*Wb));
             
-            %compensation(•â)
+            %compensation(è£œå„Ÿ)
             for nb=1:number_bind
                 carrier=nc+nb-1;
                 if carrier>64
@@ -392,29 +390,29 @@ for ebno=1:((ebno_max-ebno_min)/ebno_step)+1
         
         
         %% CCM-SMI%
-        %‘ŠŠÖs—ñ
-        %³‚µ‚¢
+        %ç›¸é–¢è¡Œåˆ—
+        %æ­£ã—ã„
         Pccm=serial_signal_rx(:,1:((guard_interval+number_carrier)*number_pilot))*serial_signal_rx(:,1:((guard_interval+number_carrier)*number_pilot))'/((guard_interval+number_carrier)*number_pilot);
-        %ˆÀH
+        %å®‰ï¼Ÿ
 %         Pccm=serial_signal_rx*serial_signal_rx'/((guard_interval+number_carrier)*(number_symbol+number_pilot));
-        %‘ŠŠÖƒxƒNƒgƒ‹
+        %ç›¸é–¢ãƒ™ã‚¯ãƒˆãƒ«
         Vccm=serial_signal_rx(:,1:((guard_interval+number_carrier)*number_pilot))*conj(serial_signal_tx(D,1:(guard_interval+number_carrier)*number_pilot).')/((guard_interval+number_carrier)*number_pilot);
-        %d‚İ
+        %é‡ã¿
         Wc=pinv(Pccm)*Vccm;
         Wccm=(Wc./(Vccm'*Wc));
         
-        %compensation(•â)
+        %compensation(è£œå„Ÿ)
         for nc=1:number_carrier
             Rec_ccm(nc,:)=Wccm'*fft_sig(:,:,nc);
         end
 
         
-        %% •œ’²,Œë‚èŒvZ
+        %% å¾©èª¿,èª¤ã‚Šè¨ˆç®—
 %         
 %         W(:,1)=Wsmi(:,1);
 %         W(:,3)=Wccm(:,1);
         
-        %Rec(carrier*symbol)->Recover(symbol*carrier)‚Ö
+        %Rec(carrier*symbol)->Recover(symbol*carrier)ã¸
         Recover_smi=Rec_smi.';
         Recover_ccm=Rec_ccm.';
         Recover_bind=Rec_bind.';
@@ -425,20 +423,20 @@ for ebno=1:((ebno_max-ebno_min)/ebno_step)+1
         detected_bit_bind=demodulation(modulation_index,Recover_bind, number_symbol, number_pilot, number_carrier);
 %          detected_bit_zf=demodulation(modulation_index,Recover_zf, number_symbol, number_pilot, number_carrier);    %%%%
         
-        %BERŒvZ
+        %BERè¨ˆç®—
         ber_result_smi=ber_calculation(modulation_index,ber_result_smi, Desired_bit_signal, detected_bit_smi, ebno, modified_eb_no);
         ber_result_ccm=ber_calculation(modulation_index,ber_result_ccm, Desired_bit_signal, detected_bit_ccm, ebno, modified_eb_no);
         ber_result_bind=ber_calculation(modulation_index,ber_result_bind, Desired_bit_signal, detected_bit_bind, ebno, modified_eb_no);
 %         ber_result_zf=ber_calculation(modulation_index,ber_result_zf, Desired_bit_signal, detected_bit_zf, ebno, modified_eb_no);   %%%%
 
-        %ThptŒvZ
+        %Thptè¨ˆç®—
         thpt_result_smi=thpt_calculation(modulation_index, thpt_result_smi, Desired_bit_signal, detected_bit_smi, ebno, modified_eb_no, trans_rate, serial_signal_tx);
         thpt_result_ccm=thpt_calculation(modulation_index, thpt_result_ccm, Desired_bit_signal, detected_bit_ccm, ebno, modified_eb_no, trans_rate, serial_signal_tx);
         thpt_result_bind=thpt_calculation(modulation_index, thpt_result_bind, Desired_bit_signal, detected_bit_bind, ebno, modified_eb_no, trans_rate, serial_signal_tx);
 %         thpt_result_zf=thpt_calculation(modulation_index, thpt_result_zf, Desired_bit_signal, detected_bit_proccm, ebno, modified_eb_no, trans_rate, serial_signal_tx);
     end
 end
-%% ƒvƒƒbƒg
+%% ãƒ—ãƒ­ãƒƒãƒˆ
 ber_result_smi(:,2)=ber_result_smi(:,2)./repeat;
 ber_result_ccm(:,2)=ber_result_ccm(:,2)./repeat;
 ber_result_bind(:,2)=ber_result_bind(:,2)./repeat;
@@ -460,7 +458,7 @@ ylabel('BER');
 axis([0,15,10^(-5),10^(0)]);
 grid on;
 
-%Thptƒvƒƒbƒg
+%Thptãƒ—ãƒ­ãƒƒãƒˆ
 thpt_result_smi(:,2)=thpt_result_smi(:,2)./repeat;
 thpt_result_ccm(:,2)=thpt_result_ccm(:,2)./repeat;
 thpt_result_bind(:,2)=thpt_result_bind(:,2)./repeat;
@@ -480,7 +478,7 @@ axis([0,15,0,10^7]);
 grid on;
 
 
-%BER•Û‘¶
+%BERä¿å­˜
 % saveas(gcf,num2str(K_dB));
 % saveas(gcf,'K50fd001sigma02');
 
@@ -489,20 +487,20 @@ end
 
 
 
-% %ƒAƒ“ƒeƒiƒpƒ^[ƒ“%(30dB‚Ì‚Æ‚«.repeat•ª•½‹Ï‰».SMI‚Ícarrier64‚Ì‚Æ‚«)
+% %ã‚¢ãƒ³ãƒ†ãƒŠãƒ‘ã‚¿ãƒ¼ãƒ³%(30dBã®ã¨ã.repeatåˆ†å¹³å‡åŒ–.SMIã¯carrier64ã®ã¨ã)
 % WW=W./repeat;
 % doa=-90:90;     %Degree of Arrival
 % figure(2);
-% ant_pattern(doa,d,number_ant,WW(:,4));      %proccm‚ÌƒAƒ“ƒeƒiƒpƒ^[ƒ“
+% ant_pattern(doa,d,number_ant,WW(:,4));      %proccmã®ã‚¢ãƒ³ãƒ†ãƒŠãƒ‘ã‚¿ãƒ¼ãƒ³
 % title('Prop.CCM-SMI');
 % figure(3);
-% ant_pattern(doa,d,number_ant,WW(:,3));      %ccm‚ÌƒAƒ“ƒeƒiƒpƒ^[ƒ“
+% ant_pattern(doa,d,number_ant,WW(:,3));      %ccmã®ã‚¢ãƒ³ãƒ†ãƒŠãƒ‘ã‚¿ãƒ¼ãƒ³
 % title('Conv.CCM-SMI');
 % figure(4);
-% ant_pattern(doa,d,number_ant,WW(:,2));      %prosmi‚ÌƒAƒ“ƒeƒiƒpƒ^[ƒ“
+% ant_pattern(doa,d,number_ant,WW(:,2));      %prosmiã®ã‚¢ãƒ³ãƒ†ãƒŠãƒ‘ã‚¿ãƒ¼ãƒ³
 % title('Prop.SMI');
 % figure(5);
-% ant_pattern(doa,d,number_ant,WW(:,1));      %smi‚ÌƒAƒ“ƒeƒiƒpƒ^[ƒ“
+% ant_pattern(doa,d,number_ant,WW(:,1));      %smiã®ã‚¢ãƒ³ãƒ†ãƒŠãƒ‘ã‚¿ãƒ¼ãƒ³
 % title('Conv.SMI');
 % 
 % figure(6);
